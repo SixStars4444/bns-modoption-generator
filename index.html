@@ -197,17 +197,17 @@
     <div class="config-item">
       <label>Member Type</label>
       <select id="memberType">
-        <option ="property">Property (Recommended)</option>
-        <option ="field">Field</option>
-        <option ="method">Method</option>
+        <option value="property">Property (Recommended)</option>
+        <option value="field">Field</option>
+        <option value="method">Method</option>
       </select>
     </div>
     <div class="config-item">
       <label>Access Modifier</label>
       <select id="accessModifier">
-        <option ="public">public</option>
-        <option ="private">private</option>
-        <option ="internal">internal</option>
+        <option value="public">public</option>
+        <option value="private">private</option>
+        <option value="internal">internal</option>
       </select>
     </div>
   </div>
@@ -226,15 +226,15 @@
       </div>
       <div class="config-item">
         <label>Category Order</label>
-        <input type="number" id="categoryOrder" ="0" />
+        <input type="number" id="categoryOrder" value="0" />
       </div>
       <div class="config-item">
         <label>Option Order</label>
-        <input type="number" id="optionOrder" ="0" />
+        <input type="number" id="optionOrder" value="0" />
       </div>
       <div class="config-item">
         <label>Order Increment</label>
-        <input type="number" id="orderIncrement" ="10" />
+        <input type="number" id="orderIncrement" value="10" />
       </div>
     </div>
 
@@ -261,8 +261,8 @@
       <label for="numericUseSlider">Use [ModOptionSlider] for float/int</label>
     </div>
     <div class="checkbox-wrapper">
-      <input type="checkbox" id="numericGenerateSource" />
-      <label for="numericGenerateSource">Generate custom value source method</label>
+      <input type="checkbox" id="numericGenerateValueSource" />
+      <label for="numericGenerateValueSource">Generate custom value source method</label>
     </div>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="separateValueSources" checked />
@@ -350,9 +350,6 @@
     • <code>string MyText = "Hello";</code><br>
     • Use the <strong>Category Name</strong> field above to group all options into a category.<br>
     • Supports: <code>float</code>, <code>int</code>, <code>bool</code>, <code>string</code>, <code>Color</code>
-  </div>
-  <div class="error">
-    <strong>⚠️ Arrays/Lists Not Supported:</strong> ModOption does NOT support arrays (<code>float[]</code>) or lists (<code>List&lt;int&gt;</code>). Use custom value source methods instead for multiple options.
   </div>
   <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;Color MyColor = new Color(1f, 0f, 1f);&#10;&#10;"></textarea>
 </div>
@@ -502,7 +499,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
@@ -532,7 +529,7 @@
     return options;
 }`;
           
-          modOptionParams.push('nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
@@ -740,7 +737,7 @@
         new ModOptionColor("Custom", ${cleanValue})
     };
 }`;
-          modOptionParams.push(`nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         }
       }
 
@@ -1026,4 +1023,3 @@
   </script>
 </body>
 </html>
-
