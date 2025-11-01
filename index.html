@@ -388,11 +388,9 @@
       let valueSourceMethod = null;
       let valueSourceMethodName = null;
       
-      // Build attributes array
       let attributes = [];
       let modOptionParams = [];
 
-      // Add category if specified
       if (config.categoryName) {
         if (config.useSeparateAttributes) {
           let catAttr = `[ModOptionCategory("${config.categoryName}"`;
@@ -409,7 +407,6 @@
         }
       }
 
-      // Add order if specified
       if (config.optionOrder !== 0) {
         if (config.useSeparateAttributes) {
           attributes.push(`[ModOptionOrder(${config.optionOrder})]`);
@@ -418,7 +415,6 @@
         }
       }
 
-      // Add save behavior
       if (!config.saveValues) {
         if (config.useSeparateAttributes) {
           attributes.push(`[ModOptionDontSave]`);
@@ -427,12 +423,10 @@
         }
       }
 
-      // Type-specific attributes and value formatting
       if (lowerType === "float") {
         cleanValue = cleanValue.replace(/f$/i, "") + "f";
         
         if (config.numericGenerateValueSource) {
-          // Generate custom value source method
           valueSourceMethodName = `${memberName}Options`;
           const min = parseFloat(config.floatMin);
           const max = parseFloat(config.floatMax);
@@ -450,7 +444,6 @@
     return options;
 }`;
           
-          // Add valueSourceName to ModOption attribute
           modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
@@ -460,7 +453,6 @@
         cleanValue = cleanValue.replace(/[^0-9-]/g, "");
         
         if (config.numericGenerateValueSource) {
-          // Generate custom value source method
           valueSourceMethodName = `${memberName}Options`;
           const min = parseInt(config.intMin);
           const max = parseInt(config.intMax);
@@ -478,11 +470,10 @@
     return options;
 }`;
           
-          // Add valueSourceName to ModOption attribute
           modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
-          attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax})]`);
+          attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
         }
       } else if (lowerType === "bool") {
         cleanValue = cleanValue.toLowerCase() === "true" ? "true" : "false";
@@ -495,7 +486,6 @@
         if (!cleanValue.startsWith('"')) cleanValue = '"' + cleanValue;
         if (!cleanValue.endsWith('"')) cleanValue = cleanValue + '"';
       } else if (lowerType === "color") {
-        // Color values like Color.red stay as-is
       }
 
       // Add tooltip if enabled
@@ -515,7 +505,6 @@
         }
       }
 
-      // Build main ModOption attribute
       let modOptionAttr = `[ModOption("${readableName}"`;
       
       if (modOptionParams.length > 0) {
@@ -533,7 +522,6 @@
       modOptionAttr += `)]`;
       attributes.push(modOptionAttr);
 
-      // Generate the member declaration
       let memberDeclaration = "";
       const access = config.accessModifier;
       
@@ -579,7 +567,6 @@
         addLocalization: elements.addLocalization.checked
       };
 
-      // Enhanced regex to match various constant and static patterns
       const regex = /(?:private|public|protected|internal)?\s*(?:static)?\s*(?:const|readonly)?\s*(\w+)\s+(\w+)\s*(?:=\s*([^;]+))?;/gi;
       let match;
       let results = [];
@@ -664,7 +651,6 @@
       }
     });
 
-    // Mutual exclusivity for bool options
     elements.boolUseButton.addEventListener("change", () => {
       if (elements.boolUseButton.checked) {
         elements.boolUseArrows.checked = false;
@@ -677,7 +663,6 @@
       }
     });
 
-    // Auto-generate on input change (debounced)
     let debounceTimer;
     elements.input.addEventListener("input", () => {
       clearTimeout(debounceTimer);
