@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="icon" type="image/png" href="Imgage.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B&S ModOption Generator</title>
@@ -444,6 +445,7 @@
       let attributes = [];
       let modOptionParams = [];
 
+      // Always add category and order attributes FIRST (before type-specific logic)
       if (config.categoryName) {
         if (config.useSeparateAttributes) {
           let catAttr = `[ModOptionCategory("${config.categoryName}"`;
@@ -501,7 +503,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
@@ -531,7 +533,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
@@ -603,22 +605,54 @@
 
         if (config.colorUseSlider) {
           // Generate 4 separate properties for RGBA with sliders
-          const baseAttributes = attributes.filter(a => !a.includes('[ModOption'));
+          // Base attributes include category, save settings, tooltips - everything EXCEPT order and ModOption
+          const baseAttributesForColor = [];
           
-          const colorMin = parseFloat(config.colorMin);
-          const colorMax = parseFloat(config.colorMax);
-          const colorStep = parseFloat(config.colorStep);
+          // Add category
+          if (config.categoryName) {
+            if (config.useSeparateAttributes) {
+              let catAttr = `[ModOptionCategory("${config.categoryName}"`;
+              if (config.categoryOrder !== 0) {
+                catAttr += `, ${config.categoryOrder}`;
+              }
+              catAttr += `)]`;
+              baseAttributesForColor.push(catAttr);
+            }
+          }
+          
+          // Add save behavior
+          if (!config.saveValues) {
+            if (config.useSeparateAttributes) {
+              baseAttributesForColor.push(`[ModOptionDontSave]`);
+            }
+          }
+          
+          // Add tooltips if enabled
+          if (config.addTooltips) {
+            if (config.useSeparateAttributes) {
+              let tooltipAttr = `[ModOptionTooltip("Description for ${readableName}"`;
+              if (config.addLocalization) {
+                tooltipAttr += `, "YourMod.${memberName}.Tooltip"`;
+              }
+              tooltipAttr += `)]`;
+              baseAttributesForColor.push(tooltipAttr);
+            }
+          }
+          
+          const colorMin = parseFloat(config.colorMin) || 0;
+          const colorMax = parseFloat(config.colorMax) || 1;
+          const colorStep = parseFloat(config.colorStep) || 0.01;
           
           // Calculate order increments for color components
           const baseOrder = config.optionOrder;
           
           // Red component
-          let rAttributes = [...baseAttributes.filter(a => !a.includes('[ModOptionOrder'))];
+          let rAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             rAttributes.push(`[ModOptionOrder(${baseOrder})]`);
           }
           rAttributes.push(`[ModOptionSlider]`);
-          rAttributes.push(`[ModOptionFloatValues(${colorMin}f, ${colorMax}f, ${colorStep}f)]`);
+          rAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           rAttributes.push(`[ModOption("${readableName} - Red")]`);
           
           let rDeclaration = "";
@@ -629,12 +663,12 @@
           }
           
           // Green component
-          let gAttributes = [...baseAttributes.filter(a => !a.includes('[ModOptionOrder'))];
+          let gAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             gAttributes.push(`[ModOptionOrder(${baseOrder + 1})]`);
           }
           gAttributes.push(`[ModOptionSlider]`);
-          gAttributes.push(`[ModOptionFloatValues(${colorMin}f, ${colorMax}f, ${colorStep}f)]`);
+          gAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           gAttributes.push(`[ModOption("${readableName} - Green")]`);
           
           let gDeclaration = "";
@@ -645,12 +679,12 @@
           }
           
           // Blue component
-          let bAttributes = [...baseAttributes.filter(a => !a.includes('[ModOptionOrder'))];
+          let bAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             bAttributes.push(`[ModOptionOrder(${baseOrder + 2})]`);
           }
           bAttributes.push(`[ModOptionSlider]`);
-          bAttributes.push(`[ModOptionFloatValues(${colorMin}f, ${colorMax}f, ${colorStep}f)]`);
+          bAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           bAttributes.push(`[ModOption("${readableName} - Blue")]`);
           
           let bDeclaration = "";
@@ -661,12 +695,12 @@
           }
           
           // Alpha component
-          let aAttributes = [...baseAttributes.filter(a => !a.includes('[ModOptionOrder'))];
+          let aAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             aAttributes.push(`[ModOptionOrder(${baseOrder + 3})]`);
           }
           aAttributes.push(`[ModOptionSlider]`);
-          aAttributes.push(`[ModOptionFloatValues(${colorMin}f, ${colorMax}f, ${colorStep}f)]`);
+          aAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           aAttributes.push(`[ModOption("${readableName} - Alpha")]`);
           
           let aDeclaration = "";
@@ -707,7 +741,7 @@
         new ModOptionColor("Custom", ${cleanValue})
     };
 }`;
-          modOptionParams.push(`nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
         }
       }
 
