@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="icon" type="image/png" href="Imgage.png" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>B&S ModOption Generator</title>
@@ -349,13 +348,13 @@
     • <code>int Count;</code> (declarations without values)<br>
     • <code>Color MyColor = Color.red;</code> or <code>Color MyColor = new Color(1f, 0f, 1f);</code><br>
     • <code>string MyText = "Hello";</code><br>
-    • Use <code>// Category: MyCategory</code> to group options into categories.<br>
+    • Use the <strong>Category Name</strong> field above to group all options into a category.<br>
     • Supports: <code>float</code>, <code>int</code>, <code>bool</code>, <code>string</code>, <code>Color</code>
   </div>
   <div class="error">
     <strong>⚠️ Arrays/Lists Not Supported:</strong> ModOption does NOT support arrays (<code>float[]</code>) or lists (<code>List&lt;int&gt;</code>). Use custom value source methods instead for multiple options.
   </div>
-  <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;Color MyColor = Color.red;&#10;&#10;"></textarea>
+  <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;Color MyColor = new Color(1f, 0f, 1f);&#10;&#10;"></textarea>
 </div>
 
 <div class="button-group">
@@ -630,7 +629,7 @@
           // Add tooltips if enabled
           if (config.addTooltips) {
             if (config.useSeparateAttributes) {
-              let tooltipAttr = `[ModOptionTooltip("Description for ${readableName}"`;
+              let tooltipAttr = `[ModOptionTooltip("Color component for ${readableName}"`;
               if (config.addLocalization) {
                 tooltipAttr += `, "YourMod.${memberName}.Tooltip"`;
               }
@@ -814,19 +813,14 @@
     function loadToReorder() {
       const code = elements.input.value;
       const regex = /(?:private|public|protected|internal|static|const|readonly)?\s*(\w+)\s+(\w+)\s*(?:=\s*([^;]+))?;/gi;
-      let currentCategory = '';
       const options = [];
       code.split('\n').forEach(line => {
         line = line.trim();
-        if (line.startsWith('// Category:')) {
-          currentCategory = line.substring(12).trim();
-        } else {
-          let match;
-          regex.lastIndex = 0;
-          if ((match = regex.exec(line))) {
-            let [, type, name, value] = match;
-            options.push({type, name, value: value || getDefaultValue(type), category: currentCategory});
-          }
+        let match;
+        regex.lastIndex = 0;
+        if ((match = regex.exec(line))) {
+          let [, type, name, value] = match;
+          options.push({type, name, value: value || getDefaultValue(type)});
         }
       });
       const list = elements.reorderList;
@@ -837,7 +831,6 @@
         li.dataset.type = opt.type;
         li.dataset.name = opt.name;
         li.dataset.value = opt.value;
-        li.dataset.category = opt.category || '';
         li.draggable = true;
         list.appendChild(li);
       });
@@ -884,8 +877,7 @@
           const type = li.dataset.type;
           const name = li.dataset.name;
           const value = li.dataset.value;
-          const category = li.dataset.category;
-          let localConfig = { ...config, categoryName: category || config.categoryName, optionOrder: order + index * config.orderIncrement };
+          let localConfig = { ...config, optionOrder: order + index * config.orderIncrement };
           const result = generateModOption(type, name, value, localConfig);
           results.push(result.code);
           if (result.valueSourceMethod) {
@@ -894,25 +886,20 @@
         });
       } else {
         const code = elements.input.value;
-        let currentCategory = '';
         let order = config.optionOrder;
         code.split('\n').forEach(line => {
           line = line.trim();
-          if (line.startsWith('// Category:')) {
-            currentCategory = line.substring(12).trim();
-          } else {
-            let match;
-            regex.lastIndex = 0;
-            if ((match = regex.exec(line))) {
-              let [, type, name, value] = match;
-              let localConfig = { ...config, categoryName: currentCategory || config.categoryName, optionOrder: order };
-              const result = generateModOption(type, name, value || getDefaultValue(type), localConfig);
-              results.push(result.code);
-              if (result.valueSourceMethod) {
-                valueSources.push(result.valueSourceMethod);
-              }
-              order += config.orderIncrement;
+          let match;
+          regex.lastIndex = 0;
+          if ((match = regex.exec(line))) {
+            let [, type, name, value] = match;
+            let localConfig = { ...config, optionOrder: order };
+            const result = generateModOption(type, name, value || getDefaultValue(type), localConfig);
+            results.push(result.code);
+            if (result.valueSourceMethod) {
+              valueSources.push(result.valueSourceMethod);
             }
+            order += config.orderIncrement;
           }
         });
       }
