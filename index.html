@@ -310,9 +310,11 @@
         • <code>private const float MySpeed = 5.0f;</code><br>
         • <code>public static int MaxHealth = 100;</code><br>
         • <code>const bool EnableFeature = true;</code><br>
+        • <code>float Range = 24;</code> (any variable declaration)<br>
+        • <code>int Count;</code> (declarations without values)<br>
         • Supports: <code>float</code>, <code>int</code>, <code>bool</code>, <code>string</code>, <code>Color</code>
       </div>
-      <textarea id="input" placeholder="private const float MySpeed = 5.0f;&#10;private const int MaxHealth = 100;&#10;private const bool EnableFeature = true;&#10;private const Color MyColor = Color.red;"></textarea>
+      <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;float Range = 24;&#10;&#10;// Works with or without const/static/access modifiers!"></textarea>
     </div>
 
     <div class="button-group">
@@ -444,7 +446,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
@@ -470,7 +472,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
@@ -488,7 +490,6 @@
       } else if (lowerType === "color") {
       }
 
-      // Add tooltip if enabled
       if (config.addTooltips) {
         if (config.useSeparateAttributes) {
           let tooltipAttr = `[ModOptionTooltip("Description for ${readableName}"`;
@@ -505,7 +506,7 @@
         }
       }
 
-      let modOptionAttr = `[ModOption("${readableName}"`;
+     let modOptionAttr = `[ModOption("${readableName}"`;
       
       if (modOptionParams.length > 0) {
         modOptionAttr += `, ${modOptionParams.join(", ")}`;
@@ -567,7 +568,8 @@
         addLocalization: elements.addLocalization.checked
       };
 
-      const regex = /(?:private|public|protected|internal)?\s*(?:static)?\s*(?:const|readonly)?\s*(\w+)\s+(\w+)\s*(?:=\s*([^;]+))?;/gi;
+
+      const regex = /(?:private|public|protected|internal|static|const|readonly)?\s*(\w+)\s+(\w+)\s*(?:=\s*([^;]+))?;/gi;
       let match;
       let results = [];
       let valueSources = [];
@@ -575,7 +577,11 @@
       while ((match = regex.exec(code))) {
         let [_, type, name, value] = match;
         
-        // Skip if no value and not a property/field declaration
+        const skipKeywords = ['var', 'using', 'namespace', 'class', 'struct', 'enum', 'interface', 'return', 'if', 'else', 'for', 'while', 'foreach'];
+        if (skipKeywords.includes(type.toLowerCase())) {
+          continue;
+        }
+        
         if (!value) {
           value = getDefaultValue(type);
         }
