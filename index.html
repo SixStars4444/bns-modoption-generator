@@ -197,17 +197,17 @@
     <div class="config-item">
       <label>Member Type</label>
       <select id="memberType">
-        <option value="property">Property (Recommended)</option>
-        <option value="field">Field</option>
-        <option value="method">Method</option>
+        <option ="property">Property (Recommended)</option>
+        <option ="field">Field</option>
+        <option ="method">Method</option>
       </select>
     </div>
     <div class="config-item">
       <label>Access Modifier</label>
       <select id="accessModifier">
-        <option value="public">public</option>
-        <option value="private">private</option>
-        <option value="internal">internal</option>
+        <option ="public">public</option>
+        <option ="private">private</option>
+        <option ="internal">internal</option>
       </select>
     </div>
   </div>
@@ -226,15 +226,15 @@
       </div>
       <div class="config-item">
         <label>Category Order</label>
-        <input type="number" id="categoryOrder" value="0" />
+        <input type="number" id="categoryOrder" ="0" />
       </div>
       <div class="config-item">
         <label>Option Order</label>
-        <input type="number" id="optionOrder" value="0" />
+        <input type="number" id="optionOrder" ="0" />
       </div>
       <div class="config-item">
         <label>Order Increment</label>
-        <input type="number" id="orderIncrement" value="10" />
+        <input type="number" id="orderIncrement" ="10" />
       </div>
     </div>
 
@@ -261,8 +261,8 @@
       <label for="numericUseSlider">Use [ModOptionSlider] for float/int</label>
     </div>
     <div class="checkbox-wrapper">
-      <input type="checkbox" id="numericGenerateValueSource" />
-      <label for="numericGenerateValueSource">Generate custom value source method</label>
+      <input type="checkbox" id="numericGenerateSource" />
+      <label for="numericGenerateSource">Generate custom value source method</label>
     </div>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="separateValueSources" checked />
@@ -502,7 +502,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
@@ -532,7 +532,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push('nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
@@ -740,7 +740,7 @@
         new ModOptionColor("Custom", ${cleanValue})
     };
 }`;
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         }
       }
 
@@ -1026,3 +1026,4 @@
   </script>
 </body>
 </html>
+
