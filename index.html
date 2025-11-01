@@ -314,11 +314,11 @@
         • <code>int Count;</code> (declarations without values)<br>
         • Supports: <code>float</code>, <code>int</code>, <code>bool</code>, <code>string</code>, <code>Color</code>
       </div>
-      <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;float Range = 24;&#10;&#10;// Works with or without const/static/access modifiers!"></textarea>
+      <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;float Range = 24;&#10;&#10;"></textarea>
     </div>
 
     <div class="button-group">
-      <button id="generate">🚀 Generate ModOptions</button>
+      <button id="generate"> Generate ModOptions</button>
       <button id="copy" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);">📋 Copy to Clipboard</button>
       <button id="clear" style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);">🗑️ Clear All</button>
     </div>
@@ -598,7 +598,7 @@
         elements.output.textContent = `// No constants detected.
 // 
 // Supported formats:
-// private const float MyValue = 5.0f;
+// private float MyValue = 5.0f;
 // public static int Count = 10;
 // const bool IsEnabled = true;
 //
@@ -653,7 +653,7 @@
     elements.clear.addEventListener("click", () => {
       if (confirm("Clear input and output?")) {
         elements.input.value = "";
-        elements.output.textContent = "// Your generated code will appear here...\n// Paste your constants in the input box above and click Generate!";
+        elements.output.textContent = "// Your generated code will appear here...\n// Paste your stuff in the input box above and click Generate!";
       }
     });
 
@@ -677,3 +677,4 @@
   </script>
 </body>
 </html>
+
