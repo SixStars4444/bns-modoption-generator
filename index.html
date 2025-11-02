@@ -177,13 +177,76 @@
       display: flex;
       align-items: center;
     }
-    .sortable li::before {
-      content: "☰";
+    .sortable li .handle {
       margin-right: 10px;
       color: #aaa;
+      cursor: grab;
+      font-size: 16px;
+    }
+    .sortable li .content {
+      flex: 1;
+    }
+    .sortable li .edit-btn {
+      margin-left: auto;
+      color: #0078ff;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      transition: background 0.2s;
+    }
+    .sortable li .edit-btn:hover {
+      background: rgba(0, 120, 255, 0.2);
+    }
+    .sortable li.edited {
+      border-color: #0078ff;
     }
     .dragging {
       opacity: 0.5;
+    }
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-content label {
+      display: block;
+      margin-top: 15px;
+      color: #aaa;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .modal-content input, .modal-content textarea {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .modal-content .button-group {
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    .modal-content button {
+      padding: 8px 16px;
+      margin-left: 10px;
+    }
+    .modal-content h3 {
+      margin-top: 0;
+      color: #0078ff;
     }
   </style>
 </head>
@@ -356,15 +419,15 @@
 </div>
 
 <div class="button-group">
-  <button id="loadReorder" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);"> Load for Reordering</button>
+  <button id="loadReorder" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);"> Load for Editing & Reordering</button>
   <button id="generate"> Generate ModOptions</button>
   <button id="copy" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);"> Copy to Clipboard</button>
   <button id="clear" style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);"> Clear All</button>
 </div>
 
 <div class="section" id="reorderSection">
-  <h3>Reorder Options</h3>
-  <p>Drag items to reorder. Click "Generate ModOptions" after reordering to update output.</p>
+  <h3>Edit & Reorder Options</h3>
+  <p>Drag the handle (☰) to reorder. Click the edit button (✎) to customize display name and tooltip (if tooltips enabled). Click "Generate ModOptions" after changes to update output.</p>
   <ul id="reorderList" class="sortable"></ul>
 </div>
 
@@ -375,8 +438,10 @@
   </div>
   <pre id="output">// Your generated code will appear here...
 // Paste your code in the input box above and click Generate!</pre>
-    </div>
+</div>
   </div>
+
+  <div id="modal"></div>
 
   <script>
     const elements = {
@@ -412,7 +477,8 @@
       colorGenerateValueSource: document.getElementById("colorGenerateValueSource"),
       colorMin: document.getElementById("colorMin"),
       colorMax: document.getElementById("colorMax"),
-      colorStep: document.getElementById("colorStep")
+      colorStep: document.getElementById("colorStep"),
+      modal: document.getElementById("modal")
     };
 
     function toggleSection(id) {
@@ -431,8 +497,64 @@
       return name.replace(/([A-Z])/g, " $1").trim();
     }
 
-    function generateModOption(type, name, value, config) {
-      const readableName = formatName(name);
+    function showEditor(li) {
+      const type = li.dataset.type;
+      const name = li.dataset.name;
+      const value = li.dataset.value;
+      const currentDisplay = li.dataset.displayName || formatName(name);
+      const currentTooltip = li.dataset.customTooltip || '';
+
+      const modal = elements.modal;
+      modal.style.display = 'flex';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <h3>Edit ${name}</h3>
+          <label for="editDisplay">Display Name:</label>
+          <input type="text" id="editDisplay" value="${currentDisplay}" />
+          ${elements.addTooltips.checked ? `
+            <label for="editTooltip">Custom Tooltip:</label>
+            <textarea id="editTooltip" placeholder="Description for ${formatName(name)}">${currentTooltip}</textarea>
+          ` : ''}
+          <div class="button-group">
+            <button id="saveEdit">Save</button>
+            <button id="cancelEdit" style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);">Cancel</button>
+          </div>
+        </div>
+      `;
+
+      const saveBtn = modal.querySelector('#saveEdit');
+      saveBtn.addEventListener('click', () => {
+        const displayInput = modal.querySelector('#editDisplay');
+        const tooltipInput = modal.querySelector('#editTooltip');
+        const newDisplay = displayInput.value.trim();
+        li.dataset.displayName = newDisplay || '';
+        if (tooltipInput) {
+          li.dataset.customTooltip = tooltipInput.value.trim() || '';
+        }
+        if (li.dataset.displayName || li.dataset.customTooltip) {
+          li.classList.add('edited');
+        } else {
+          li.classList.remove('edited');
+        }
+        li.title = `Display: ${li.dataset.displayName || formatName(name)}\nTooltip: ${li.dataset.customTooltip || 'default'}`;
+        modal.style.display = 'none';
+      });
+
+      const cancelBtn = modal.querySelector('#cancelEdit');
+      cancelBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+
+      // Close on outside click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.style.display = 'none';
+        }
+      });
+    }
+
+    function generateModOption(type, name, value, config, customDisplayName = null, customTooltip = null) {
+      const readableName = customDisplayName || formatName(name);
       let lowerType = type.toLowerCase();
       let memberName = name;
       let cleanValue = value.trim();
@@ -744,15 +866,16 @@
       }
 
       if (config.addTooltips) {
+        const tooltipText = customTooltip || `Description for ${readableName}`;
         if (config.useSeparateAttributes) {
-          let tooltipAttr = `[ModOptionTooltip("Description for ${readableName}"`;
+          let tooltipAttr = `[ModOptionTooltip("${tooltipText}"`;
           if (config.addLocalization) {
             tooltipAttr += `, "YourMod.${memberName}.Tooltip"`;
           }
           tooltipAttr += `)]`;
           attributes.push(tooltipAttr);
         } else {
-          namedParams.push(`tooltip = "Description for ${readableName}"`);
+          namedParams.push(`tooltip = "${tooltipText}"`);
           if (config.addLocalization) {
             namedParams.push(`tooltipLocalizationId = "YourMod.${memberName}.Tooltip"`);
           }
@@ -825,11 +948,17 @@
       list.innerHTML = '';
       options.forEach(opt => {
         const li = document.createElement('li');
-        li.textContent = `${opt.type} ${opt.name} = ${opt.value}`;
+        li.innerHTML = `<span class="handle">☰</span><span class="content">${opt.type} ${opt.name} = ${opt.value}</span><span class="edit-btn" title="Edit">✎</span>`;
         li.dataset.type = opt.type;
         li.dataset.name = opt.name;
         li.dataset.value = opt.value;
-        li.draggable = true;
+        li.draggable = false;
+        const handle = li.querySelector('.handle');
+        handle.draggable = true;
+        li.querySelector('.edit-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          showEditor(li);
+        });
         list.appendChild(li);
       });
     }
@@ -875,8 +1004,10 @@
           const type = li.dataset.type;
           const name = li.dataset.name;
           const value = li.dataset.value;
+          const customDisplayName = li.dataset.displayName;
+          const customTooltip = li.dataset.customTooltip;
           let localConfig = { ...config, optionOrder: order + index * config.orderIncrement };
-          const result = generateModOption(type, name, value, localConfig);
+          const result = generateModOption(type, name, value, localConfig, customDisplayName, customTooltip);
           results.push(result.code);
           if (result.valueSourceMethod) {
             valueSources.push(result.valueSourceMethod);
@@ -930,10 +1061,12 @@
     function makeSortable() {
       const sortable = elements.reorderList;
       sortable.addEventListener('dragstart', e => {
-        e.target.classList.add('dragging');
+        const li = e.target.closest('li');
+        if (li) li.classList.add('dragging');
       });
       sortable.addEventListener('dragend', e => {
-        e.target.classList.remove('dragging');
+        const li = e.target.closest('li');
+        if (li) li.classList.remove('dragging');
       });
       sortable.addEventListener('dragover', e => {
         e.preventDefault();
@@ -1024,4 +1157,3 @@
   </script>
 </body>
 </html>
-
