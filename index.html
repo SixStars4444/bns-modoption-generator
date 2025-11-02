@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,7 +190,7 @@
 <body>
   <div class="container">
     <h1>Blade & Sorcery ModOption Generator</h1>
-    <p style="color: #888;">Advanced tool for generating ModOption code</p>
+    <p style="color: #888;">A ModOption code generator by Sixstars, made for fellow lazy modders like me.</p>
 
 <div class="section">
   <h3>Quick Settings</h3>
@@ -477,7 +476,7 @@
         }
       }
 
-            if (lowerType === "float") {
+      if (lowerType === "float") {
         if (!cleanValue || cleanValue === "default") {
           cleanValue = "0.0f";
         } else {
@@ -503,12 +502,6 @@
 }`;
           
           positionalParams.push(`nameof(${valueSourceMethodName})`);
-          
-          // Add slider attributes if enabled
-          if (config.numericUseSlider) {
-            attributes.push(`[ModOptionSlider]`);
-            attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
-          }
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
