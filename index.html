@@ -476,7 +476,7 @@
         }
       }
 
-      if (lowerType === "float") {
+            if (lowerType === "float") {
         if (!cleanValue || cleanValue === "default") {
           cleanValue = "0.0f";
         } else {
@@ -502,10 +502,17 @@
 }`;
           
           positionalParams.push(`nameof(${valueSourceMethodName})`);
+          
+          // Add slider attributes if enabled
+          if (config.numericUseSlider) {
+            attributes.push(`[ModOptionSlider]`);
+            attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
+          }
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
         }
+      }
       } else if (lowerType === "int") {
         if (!cleanValue || cleanValue === "default") {
           cleanValue = "0";
