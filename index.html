@@ -440,7 +440,8 @@
       let valueSourceMethodName = null;
 
       let attributes = [];
-      let modOptionParams = [];
+      let positionalParams = [];
+      let namedParams = [];
 
       // Always add category and order attributes FIRST (before type-specific logic)
       if (config.categoryName) {
@@ -452,9 +453,9 @@
           catAttr += `)]`;
           attributes.push(catAttr);
         } else {
-          modOptionParams.push(`category: "${config.categoryName}"`);
+          namedParams.push(`category = "${config.categoryName}"`);
           if (config.categoryOrder !== 0) {
-            modOptionParams.push(`categoryOrder: ${config.categoryOrder}`);
+            namedParams.push(`categoryOrder = ${config.categoryOrder}`);
           }
         }
       }
@@ -463,7 +464,7 @@
         if (config.useSeparateAttributes) {
           attributes.push(`[ModOptionOrder(${config.optionOrder})]`);
         } else {
-          modOptionParams.push(`order: ${config.optionOrder}`);
+          namedParams.push(`order = ${config.optionOrder}`);
         }
       }
 
@@ -471,7 +472,7 @@
         if (config.useSeparateAttributes) {
           attributes.push(`[ModOptionDontSave]`);
         } else {
-          modOptionParams.push(`saveValue: false`);
+          namedParams.push(`saveValue = false`);
         }
       }
 
@@ -500,7 +501,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          positionalParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
@@ -530,7 +531,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          positionalParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
@@ -738,7 +739,7 @@
         new ModOptionColor("Custom", ${cleanValue})
     };
 }`;
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          positionalParams.push(`nameof(${valueSourceMethodName})`);
         }
       }
 
@@ -751,26 +752,25 @@
           tooltipAttr += `)]`;
           attributes.push(tooltipAttr);
         } else {
-          modOptionParams.push(`tooltip: "Description for ${readableName}"`);
+          namedParams.push(`tooltip = "Description for ${readableName}"`);
           if (config.addLocalization) {
-            modOptionParams.push(`tooltipLocalizationId: "YourMod.${memberName}.Tooltip"`);
+            namedParams.push(`tooltipLocalizationId = "YourMod.${memberName}.Tooltip"`);
           }
         }
       }
 
+      if (config.addLocalization && !namedParams.some(p => p.includes('titleLocalizationId'))) {
+        namedParams.push(`titleLocalizationId = "YourMod.${memberName}.Title"`);
+      }
+
       let modOptionAttr = `[ModOption("${readableName}"`;
       
-      if (modOptionParams.length > 0) {
-        modOptionAttr += `, ${modOptionParams.join(", ")}`;
+      if (positionalParams.length > 0) {
+        modOptionAttr += `, ${positionalParams.join(", ")}`;
       }
       
-      if (config.addLocalization && !modOptionParams.some(p => p.includes('titleLocalizationId'))) {
-        const locId = `titleLocalizationId: "YourMod.${memberName}.Title"`;
-        if (modOptionParams.length > 0) {
-          modOptionAttr += `, ${locId}`;
-        } else {
-          modOptionAttr += `, ${locId}`;
-        }
+      if (namedParams.length > 0) {
+        modOptionAttr += `, ${namedParams.join(", ")}`;
       }
       
       modOptionAttr += `)]`;
@@ -1024,4 +1024,3 @@
   </script>
 </body>
 </html>
-
