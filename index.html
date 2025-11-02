@@ -500,7 +500,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionFloatValues(${config.floatMin}f, ${config.floatMax}f, ${config.floatStep}f)]`);
@@ -530,7 +530,7 @@
     return options;
 }`;
           
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
           attributes.push(`[ModOptionIntValues(${config.intMin}, ${config.intMax}, ${config.intStep})]`);
@@ -738,7 +738,7 @@
         new ModOptionColor("Custom", ${cleanValue})
     };
 }`;
-          modOptionParams.push(`valueSourceName: nameof(${valueSourceMethodName})`);
+          modOptionParams.push(`nameof(${valueSourceMethodName})`);
         }
       }
 
@@ -1024,4 +1024,5 @@
   </script>
 </body>
 </html>
+
 
