@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -254,7 +255,6 @@
   <div class="container">
     <h1>Blade & Sorcery ModOption Generator</h1>
     <p style="color: #888;">A ModOption code generator by Sixstars, made for fellow lazy modders like me.</p>
-
 <div class="section">
   <h3>Quick Settings</h3>
   <div class="config-grid">
@@ -276,7 +276,6 @@
     </div>
   </div>
 </div>
-
 <div class="section">
   <div class="toggle-section" onclick="toggleSection('advancedConfig')">
     <span><strong>⚙️ Advanced Configuration</strong></span>
@@ -301,14 +300,12 @@
         <input type="number" id="orderIncrement" value="10" />
       </div>
     </div>
-
     <h4 style="margin-top: 20px; color: #0078ff;">Type-Specific Settings</h4>
-    
+   
     <div class="checkbox-wrapper">
       <input type="checkbox" id="useSeparateAttributes" checked />
       <label for="useSeparateAttributes">Use Separate Attributes (Recommended for readability)</label>
     </div>
-
     <h4 style="margin-top: 15px;">Boolean Options</h4>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="boolUseButton" checked />
@@ -318,7 +315,6 @@
       <input type="checkbox" id="boolUseArrows" />
       <label for="boolUseArrows">Use [ModOptionArrows] for bools</label>
     </div>
-
     <h4 style="margin-top: 15px;">Float/Int Options</h4>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="numericUseSlider" checked />
@@ -332,7 +328,6 @@
       <input type="checkbox" id="separateValueSources" checked />
       <label for="separateValueSources">Output value source methods separately at the bottom</label>
     </div>
-
     <h4 style="margin-top: 15px;">Color Options</h4>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="colorUseSlider" checked />
@@ -382,13 +377,11 @@
         <input type="number" id="intStep" value="1" />
       </div>
     </div>
-
     <h4 style="margin-top: 15px;">Save Behavior</h4>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="saveValues" checked />
       <label for="saveValues">Save values to player save file (default is true)</label>
     </div>
-
     <h4 style="margin-top: 15px;">Tooltips & Localization</h4>
     <div class="checkbox-wrapper">
       <input type="checkbox" id="addTooltips" />
@@ -400,7 +393,6 @@
     </div>
   </div>
 </div>
-
 <div class="section">
   <h3>Input Code</h3>
   <div class="info">
@@ -417,20 +409,17 @@
   </div>
   <textarea id="input" placeholder="float MySpeed = 5.0f;&#10;int MaxHealth = 100;&#10;bool EnableFeature = true;&#10;Color MyColor = new Color(1f, 0f, 1f);&#10;&#10;"></textarea>
 </div>
-
 <div class="button-group">
   <button id="loadReorder" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);"> Load for Editing & Reordering</button>
   <button id="generate"> Generate ModOptions</button>
   <button id="copy" style="background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);"> Copy to Clipboard</button>
   <button id="clear" style="background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);"> Clear All</button>
 </div>
-
 <div class="section" id="reorderSection">
   <h3>Edit & Reorder Options</h3>
   <p>Drag the handle (☰) to reorder. Click the edit button (✎) to customize display name and tooltip (if tooltips enabled). Click "Generate ModOptions" after changes to update output.</p>
   <ul id="reorderList" class="sortable"></ul>
 </div>
-
 <div class="section">
   <h3>Generated Output</h3>
   <div class="warning">
@@ -440,9 +429,7 @@
 // Paste your code in the input box above and click Generate!</pre>
 </div>
   </div>
-
   <div id="modal"></div>
-
   <script>
     const elements = {
       input: document.getElementById("input"),
@@ -480,7 +467,6 @@
       colorStep: document.getElementById("colorStep"),
       modal: document.getElementById("modal")
     };
-
     function toggleSection(id) {
       const content = document.getElementById(id);
       const toggle = document.getElementById(id.replace('Config', 'Toggle'));
@@ -492,18 +478,15 @@
         toggle.textContent = '▶';
       }
     }
-
     function formatName(name) {
       return name.replace(/([A-Z])/g, " $1").trim();
     }
-
     function showEditor(li) {
       const type = li.dataset.type;
       const name = li.dataset.name;
       const value = li.dataset.value;
       const currentDisplay = li.dataset.displayName || formatName(name);
       const currentTooltip = li.dataset.customTooltip || '';
-
       const modal = elements.modal;
       modal.style.display = 'flex';
       modal.innerHTML = `
@@ -521,7 +504,6 @@
           </div>
         </div>
       `;
-
       const saveBtn = modal.querySelector('#saveEdit');
       saveBtn.addEventListener('click', () => {
         const displayInput = modal.querySelector('#editDisplay');
@@ -539,12 +521,10 @@
         li.title = `Display: ${li.dataset.displayName || formatName(name)}\nTooltip: ${li.dataset.customTooltip || 'default'}`;
         modal.style.display = 'none';
       });
-
       const cancelBtn = modal.querySelector('#cancelEdit');
       cancelBtn.addEventListener('click', () => {
         modal.style.display = 'none';
       });
-
       // Close on outside click
       modal.addEventListener('click', (e) => {
         if (e.target === modal) {
@@ -552,7 +532,6 @@
         }
       });
     }
-
     function generateModOption(type, name, value, config, customDisplayName = null, customTooltip = null) {
       const readableName = customDisplayName || formatName(name);
       let lowerType = type.toLowerCase();
@@ -560,11 +539,9 @@
       let cleanValue = value.trim();
       let valueSourceMethod = null;
       let valueSourceMethodName = null;
-
       let attributes = [];
       let positionalParams = [];
       let namedParams = [];
-
       // Always add category and order attributes FIRST (before type-specific logic)
       if (config.categoryName) {
         if (config.useSeparateAttributes) {
@@ -581,7 +558,6 @@
           }
         }
       }
-
       if (config.optionOrder !== 0) {
         if (config.useSeparateAttributes) {
           attributes.push(`[ModOptionOrder(${config.optionOrder})]`);
@@ -589,7 +565,6 @@
           namedParams.push(`order = ${config.optionOrder}`);
         }
       }
-
       if (!config.saveValues) {
         if (config.useSeparateAttributes) {
           attributes.push(`[ModOptionDontSave]`);
@@ -597,21 +572,20 @@
           namedParams.push(`saveValue = false`);
         }
       }
-
       if (lowerType === "float") {
         if (!cleanValue || cleanValue === "default") {
           cleanValue = "0.0f";
         } else {
           cleanValue = cleanValue.replace(/f$/i, "") + "f";
         }
-        
+       
         if (config.numericGenerateValueSource) {
           valueSourceMethodName = `${memberName}Options`;
           const min = parseFloat(config.floatMin);
           const max = parseFloat(config.floatMax);
           const step = parseFloat(config.floatStep);
           const count = Math.floor((max - min) / step) + 1;
-          
+         
           valueSourceMethod = `public static ModOptionFloat[] ${valueSourceMethodName}()
 {
     var options = new ModOptionFloat[${count}];
@@ -622,7 +596,7 @@
     }
     return options;
 }`;
-          
+         
           positionalParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
@@ -634,14 +608,14 @@
         } else {
           cleanValue = cleanValue.replace(/[^0-9-]/g, "");
         }
-        
+       
         if (config.numericGenerateValueSource) {
           valueSourceMethodName = `${memberName}Options`;
           const min = parseInt(config.intMin);
           const max = parseInt(config.intMax);
           const step = parseInt(config.intStep);
           const count = Math.floor((max - min) / step) + 1;
-          
+         
           valueSourceMethod = `public static ModOptionInt[] ${valueSourceMethodName}()
 {
     var options = new ModOptionInt[${count}];
@@ -652,7 +626,7 @@
     }
     return options;
 }`;
-          
+         
           positionalParams.push(`nameof(${valueSourceMethodName})`);
         } else if (config.numericUseSlider) {
           attributes.push(`[ModOptionSlider]`);
@@ -676,9 +650,9 @@
         if (cleanValue.startsWith('"') && cleanValue.endsWith('"')) {
           cleanValue = cleanValue.slice(1, -1);
         }
-        
+       
         let r = 1, g = 1, b = 1, a = 1;
-        
+       
         if (cleanValue.startsWith('#')) {
           let hex = cleanValue.replace('#', '');
           if (hex.length === 3) {
@@ -722,12 +696,11 @@
         } else if (!cleanValue || cleanValue === 'default') {
           cleanValue = "new Color(1f, 1f, 1f, 1f)";
         }
-
-        if (config.colorUseSlider) {
+        if (config.colorUseSlider && config.memberType !== "method") {
           // Generate 4 separate properties for RGBA with sliders
-          // Base attributes include category, save settings, tooltips - everything EXCEPT order and ModOption
+          // Base attributes include category, save settings - everything EXCEPT tooltips, order and ModOption
           const baseAttributesForColor = [];
-          
+         
           // Add category
           if (config.categoryName) {
             if (config.useSeparateAttributes) {
@@ -739,101 +712,125 @@
               baseAttributesForColor.push(catAttr);
             }
           }
-          
+         
           // Add save behavior
           if (!config.saveValues) {
             if (config.useSeparateAttributes) {
               baseAttributesForColor.push(`[ModOptionDontSave]`);
             }
           }
-          
-          // Add tooltips if enabled
-          if (config.addTooltips) {
-            if (config.useSeparateAttributes) {
-              let tooltipAttr = `[ModOptionTooltip("Color component for ${readableName}"`;
-              if (config.addLocalization) {
-                tooltipAttr += `, "YourMod.${memberName}.Tooltip"`;
-              }
-              tooltipAttr += `)]`;
-              baseAttributesForColor.push(tooltipAttr);
-            }
-          }
-          
+         
           const colorMin = parseFloat(config.colorMin) || 0;
           const colorMax = parseFloat(config.colorMax) || 1;
           const colorStep = parseFloat(config.colorStep) || 0.01;
-          
+         
           // Calculate order increments for color components
           const baseOrder = config.optionOrder;
-          
+         
           // Red component
           let rAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             rAttributes.push(`[ModOptionOrder(${baseOrder})]`);
           }
+          if (config.addTooltips) {
+            let tooltipText = customTooltip ? `${customTooltip} (red component)` : `Adjust the red component of the ${readableName} color.`;
+            let tooltipAttr = `[ModOptionTooltip("${tooltipText}"`;
+            if (config.addLocalization) {
+              tooltipAttr += `, "YourMod.${memberName}_Red.Tooltip"`;
+            }
+            tooltipAttr += `)]`;
+            rAttributes.push(tooltipAttr);
+          }
           rAttributes.push(`[ModOptionSlider]`);
           rAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           rAttributes.push(`[ModOption("${readableName} - Red")]`);
-          
+         
           let rDeclaration = "";
           if (config.memberType === "field") {
             rDeclaration = `${config.accessModifier} static float ${memberName}_R = ${r.toFixed(3)}f;`;
           } else if (config.memberType === "property") {
             rDeclaration = `${config.accessModifier} static float ${memberName}_R { get; set; } = ${r.toFixed(3)}f;`;
           }
-          
+         
           // Green component
           let gAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             gAttributes.push(`[ModOptionOrder(${baseOrder + 1})]`);
           }
+          if (config.addTooltips) {
+            let tooltipText = customTooltip ? `${customTooltip} (green component)` : `Adjust the green component of the ${readableName} color.`;
+            let tooltipAttr = `[ModOptionTooltip("${tooltipText}"`;
+            if (config.addLocalization) {
+              tooltipAttr += `, "YourMod.${memberName}_Green.Tooltip"`;
+            }
+            tooltipAttr += `)]`;
+            gAttributes.push(tooltipAttr);
+          }
           gAttributes.push(`[ModOptionSlider]`);
           gAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           gAttributes.push(`[ModOption("${readableName} - Green")]`);
-          
+         
           let gDeclaration = "";
           if (config.memberType === "field") {
             gDeclaration = `${config.accessModifier} static float ${memberName}_G = ${g.toFixed(3)}f;`;
           } else if (config.memberType === "property") {
             gDeclaration = `${config.accessModifier} static float ${memberName}_G { get; set; } = ${g.toFixed(3)}f;`;
           }
-          
+         
           // Blue component
           let bAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             bAttributes.push(`[ModOptionOrder(${baseOrder + 2})]`);
           }
+          if (config.addTooltips) {
+            let tooltipText = customTooltip ? `${customTooltip} (blue component)` : `Adjust the blue component of the ${readableName} color.`;
+            let tooltipAttr = `[ModOptionTooltip("${tooltipText}"`;
+            if (config.addLocalization) {
+              tooltipAttr += `, "YourMod.${memberName}_Blue.Tooltip"`;
+            }
+            tooltipAttr += `)]`;
+            bAttributes.push(tooltipAttr);
+          }
           bAttributes.push(`[ModOptionSlider]`);
           bAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           bAttributes.push(`[ModOption("${readableName} - Blue")]`);
-          
+         
           let bDeclaration = "";
           if (config.memberType === "field") {
             bDeclaration = `${config.accessModifier} static float ${memberName}_B = ${b.toFixed(3)}f;`;
           } else if (config.memberType === "property") {
             bDeclaration = `${config.accessModifier} static float ${memberName}_B { get; set; } = ${b.toFixed(3)}f;`;
           }
-          
+         
           // Alpha component
           let aAttributes = [...baseAttributesForColor];
           if (baseOrder !== 0) {
             aAttributes.push(`[ModOptionOrder(${baseOrder + 3})]`);
           }
+          if (config.addTooltips) {
+            let tooltipText = customTooltip ? `${customTooltip} (alpha component)` : `Adjust the alpha (opacity) component of the ${readableName} color.`;
+            let tooltipAttr = `[ModOptionTooltip("${tooltipText}"`;
+            if (config.addLocalization) {
+              tooltipAttr += `, "YourMod.${memberName}_Alpha.Tooltip"`;
+            }
+            tooltipAttr += `)]`;
+            aAttributes.push(tooltipAttr);
+          }
           aAttributes.push(`[ModOptionSlider]`);
           aAttributes.push(`[ModOptionFloatValues(${colorMin.toFixed(2)}f, ${colorMax.toFixed(2)}f, ${colorStep.toFixed(3)}f)]`);
           aAttributes.push(`[ModOption("${readableName} - Alpha")]`);
-          
+         
           let aDeclaration = "";
           if (config.memberType === "field") {
             aDeclaration = `${config.accessModifier} static float ${memberName}_A = ${a.toFixed(3)}f;`;
           } else if (config.memberType === "property") {
             aDeclaration = `${config.accessModifier} static float ${memberName}_A { get; set; } = ${a.toFixed(3)}f;`;
           }
-          
+         
           // Helper property to get the Color
           const helperComment = `// Helper property to get the color from RGBA components`;
           let helperDeclaration = `public static Color ${memberName} => new Color(${memberName}_R, ${memberName}_G, ${memberName}_B, ${memberName}_A);`;
-          
+         
           return {
             code: rAttributes.join("\n") + "\n" + rDeclaration + "\n\n" +
                   gAttributes.join("\n") + "\n" + gDeclaration + "\n\n" +
@@ -864,7 +861,6 @@
           positionalParams.push(`nameof(${valueSourceMethodName})`);
         }
       }
-
       if (config.addTooltips) {
         const tooltipText = customTooltip || `Description for ${readableName}`;
         if (config.useSeparateAttributes) {
@@ -881,44 +877,39 @@
           }
         }
       }
-
       if (config.addLocalization && !namedParams.some(p => p.includes('titleLocalizationId'))) {
         namedParams.push(`titleLocalizationId = "YourMod.${memberName}.Title"`);
       }
-
       let modOptionAttr = `[ModOption("${readableName}"`;
-      
+     
       if (positionalParams.length > 0) {
         modOptionAttr += `, ${positionalParams.join(", ")}`;
       }
-      
+     
       if (namedParams.length > 0) {
         modOptionAttr += `, ${namedParams.join(", ")}`;
       }
-      
+     
       modOptionAttr += `)]`;
       attributes.push(modOptionAttr);
-
       let memberDeclaration = "";
       const access = config.accessModifier;
-      
+     
       if (config.memberType === "field") {
         memberDeclaration = `${access} static ${type} ${memberName} = ${cleanValue};`;
       } else if (config.memberType === "property") {
         memberDeclaration = `${access} static ${type} ${memberName} { get; set; } = ${cleanValue};`;
       } else if (config.memberType === "method") {
-        memberDeclaration = `${access} static void ${memberName}(${type} value)\n{\n    // TODO: Implement logic for ${readableName}\n}`;
+        memberDeclaration = `${access} static void ${memberName}(${type} value)\n{\n // TODO: Implement logic for ${readableName}\n}`;
       }
-
       let result = attributes.join("\n") + "\n" + memberDeclaration;
-      
+     
       return {
         code: result,
         valueSourceMethod: valueSourceMethod,
         valueSourceMethodName: valueSourceMethodName
       };
     }
-
     function getDefaultValue(type) {
       const lowerType = type.toLowerCase();
       switch (lowerType) {
@@ -930,7 +921,6 @@
         default: return "default";
       }
     }
-
     function loadToReorder() {
       const code = elements.input.value;
       const regex = /(?:private|public|protected|internal|static|const|readonly)?\s*(\w+)\s+(\w+)\s*(?:=\s*([^;]+))?;/gi;
@@ -962,7 +952,6 @@
         list.appendChild(li);
       });
     }
-
     function generate() {
       const config = {
         memberType: elements.memberType.value,
@@ -992,12 +981,10 @@
         colorMax: elements.colorMax.value,
         colorStep: elements.colorStep.value
       };
-
       const list = elements.reorderList;
       let results = [];
       let valueSources = [];
       const regex = /(?:private|public|protected|internal|static|const|readonly)?\s*(\w+)\s+(\w+)\s*(?:=\s*([^;]+))?;/gi;
-
       if (list.children.length > 0) {
         let order = config.optionOrder;
         Array.from(list.children).forEach((li, index) => {
@@ -1032,7 +1019,6 @@
           }
         });
       }
-
       if (results.length === 0) {
         elements.output.textContent = `// Nothing detected in input
 // Supported formats:
@@ -1043,7 +1029,7 @@
 // Make sure your declarations end with semicolons!`;
       } else {
         let output = "";
-        
+       
         if (config.separateValueSources && valueSources.length > 0) {
           output += "// ===== ModOption Declarations =====\n\n";
           output += results.join("\n\n");
@@ -1053,11 +1039,10 @@
         } else {
           output = results.join("\n\n");
         }
-        
+       
         elements.output.textContent = output;
       }
     }
-
     function makeSortable() {
       const sortable = elements.reorderList;
       sortable.addEventListener('dragstart', e => {
@@ -1079,7 +1064,6 @@
         }
       });
     }
-
     function getDragAfterElement(container, y) {
       const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
       return draggableElements.reduce((closest, child) => {
@@ -1092,10 +1076,8 @@
         }
       }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
-
     elements.loadReorder.addEventListener("click", loadToReorder);
     elements.generate.addEventListener("click", generate);
-
     elements.copy.addEventListener("click", async () => {
       const text = elements.output.textContent;
       if (text && !text.startsWith("//")) {
@@ -1111,7 +1093,6 @@
         }
       }
     });
-
     elements.clear.addEventListener("click", () => {
       if (confirm("Clear input and output?")) {
         elements.input.value = "";
@@ -1119,31 +1100,26 @@
         elements.output.textContent = "// Your generated code will appear here...\n// Paste your code in the input box above and click Generate!";
       }
     });
-
     elements.boolUseButton.addEventListener("change", () => {
       if (elements.boolUseButton.checked) {
         elements.boolUseArrows.checked = false;
       }
     });
-
     elements.boolUseArrows.addEventListener("change", () => {
       if (elements.boolUseArrows.checked) {
         elements.boolUseButton.checked = false;
       }
     });
-
     elements.colorUseSlider.addEventListener("change", () => {
       if (elements.colorUseSlider.checked) {
         elements.colorGenerateValueSource.checked = false;
       }
     });
-
     elements.colorGenerateValueSource.addEventListener("change", () => {
       if (elements.colorGenerateValueSource.checked) {
         elements.colorUseSlider.checked = false;
       }
     });
-
     let debounceTimer;
     elements.input.addEventListener("input", () => {
       clearTimeout(debounceTimer);
@@ -1152,8 +1128,8 @@
         generate();
       }, 700);
     });
-
     makeSortable();
   </script>
 </body>
 </html>
+```
